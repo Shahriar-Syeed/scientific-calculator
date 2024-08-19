@@ -17,12 +17,14 @@ export const Calculator = () => {
     π:'Math.PI',
     e:'Math.E',
     "^":'**',
+    "√":'Math.sqrt',
   };
 
   function calcResult(){
     if(expression.length !== 0){
       try{
         let compute = eval(expression);
+        compute = parseFloat(compute.toFixed(4))
         setResult(compute.toString());
       }catch(error){
         console.log(error);
@@ -30,9 +32,19 @@ export const Calculator = () => {
       }
     }else{
       setResult('An Error Occurred!');
-
     }
-
+  }
+  function extractLastNum(exp){
+    const numbers = exp.match(/\d+/g);
+    return numbers ? numbers[numbers.length -1] : null;
+  }
+  function factorial(n){
+    let result =1;
+    for(let i =1; i <=n; i++){
+      console.log(result)
+      result *= i;
+    }
+    return result;
   }
 
   function handleButton(value) {
@@ -43,7 +55,23 @@ export const Calculator = () => {
     } else if(value ==='DEL'){
       setDisplayExp(displayExp.slice(0,-1));
       setExpression(expression.slice(0,-1));
-    }else if(value ==='='){
+    }else if(sciFunction.hasOwnProperty(value)){
+      if(value !== 'π'&& value !== 'e'){
+
+        setDisplayExp(displayExp+value+'(');
+        setExpression(expression + sciFunction[value]+'(');
+      }else{
+        setDisplayExp(displayExp+value);
+        setExpression(expression + sciFunction[value]);
+      }
+    } else if(value ==='!'){
+      const lastNum = extractLastNum(expression);
+      if(lastNum != null){
+        const num = parseFloat(lastNum);
+        setDisplayExp(displayExp + value);
+        setExpression(expression.replace(lastNum, factorial(num)));
+      }
+    } else if(value ==='='){
       calcResult();
     } else{
       setExpression(expression+ value);
